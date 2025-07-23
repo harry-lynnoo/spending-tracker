@@ -1,11 +1,19 @@
-// src/pages/Analytics.jsx
 import { useEffect, useState } from 'react';
 import { loadData } from '../utils/localStorageHelpers';
 import { Link } from 'react-router-dom';
 import { Line, Pie } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, ArcElement, Tooltip, Legend } from 'chart.js';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  ArcElement,
+  Tooltip,
+  Legend,
+} from 'chart.js';
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, ArcElement, Tooltip, Legend, ArcElement);
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, ArcElement, Tooltip, Legend);
 
 export default function Analytics() {
   const [entries, setEntries] = useState([]);
@@ -28,33 +36,67 @@ export default function Analytics() {
   const pieData = Object.values(categoryMap);
 
   return (
-    <div style={{ padding: 20 }}>
+    <div className="container" style={{ maxWidth: 'none', width: '100%' }}>
       <h1>📊 Analytics Dashboard</h1>
-      <p><strong>Total Spending (All Time):</strong> ${totalAllTime.toFixed(2)}</p>
-      
-      <div style={{ maxWidth: 600 }}>
-        <h2>Line Chart</h2>
-        <Line
-          data={{
-            labels,
-            datasets: [{ label: 'Spending Over Time', data: amounts, borderColor: 'blue' }],
-          }}
-        />
 
-        <h2>Pie Chart</h2>
-        <Pie
-          data={{
-            labels: pieLabels,
-            datasets: [{
-              data: pieData,
-              backgroundColor: ['#36A2EB', '#FF6384', '#FFCE56', '#4BC0C0', '#9966FF'],
-            }],
-          }}
-        />
+      <div className="top-right-link">
+        <Link to="/journal">Go to Journal</Link>
       </div>
 
-      <br />
-      <Link to="/journal">➕ Go to Journal</Link>
+      <p><strong>Total Spending (All Time):</strong> ${totalAllTime.toFixed(2)}</p>
+
+      <div className="chart-row">
+        <div className="chart-box">
+          <h2>Line Chart</h2>
+          <div style={{ width: '100%', height: '300px' }}>
+            <Line
+              data={{
+                labels,
+                datasets: [
+                  {
+                    label: 'Spending Over Time',
+                    data: amounts,
+                    borderColor: 'blue',
+                    borderWidth: 2,
+                  },
+                ],
+              }}
+              options={{
+                responsive: true,
+                maintainAspectRatio: false,
+              }}
+            />
+          </div>
+        </div>
+
+        <div className="chart-box">
+          <h2>Pie Chart</h2>
+          <div style={{ width: '100%', height: '300px' }}>
+            <Pie
+              data={{
+                labels: pieLabels,
+                datasets: [
+                  {
+                    data: pieData,
+                    backgroundColor: [
+                      '#42a5f5',
+                      '#66bb6a',
+                      '#ffa726',
+                      '#ab47bc',
+                      '#ef5350',
+                      '#29b6f6',
+                    ],
+                  },
+                ],
+              }}
+              options={{
+                responsive: true,
+                maintainAspectRatio: false,
+              }}
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

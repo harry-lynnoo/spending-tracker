@@ -1,5 +1,5 @@
 // src/pages/Journal.jsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { saveData, loadData } from '../utils/localStorageHelpers';
 import { Link } from 'react-router-dom';
 
@@ -8,7 +8,18 @@ export default function Journal() {
   const [category, setCategory] = useState('');
   const [amount, setAmount] = useState('');
   const [customCategory, setCustomCategory] = useState('');
-  const [entries, setEntries] = useState(loadData());
+  const [entries, setEntries] = useState([]);
+
+  // Load data from localStorage on first render
+  useEffect(() => {
+    setEntries(loadData());
+  }, []);
+
+  const handleDelete = (index) => {
+    const updatedEntries = entries.filter((_, i) => i !== index);
+    setEntries(updatedEntries);
+    saveData(updatedEntries);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -26,33 +37,65 @@ export default function Journal() {
   };
 
   return (
-    <div style={{ padding: 20 }}>
+    <div className="container">
       <h1>📝 Spending Journal</h1>
+      <Link to="/" className="top-right-link">📊 Back to Analytics</Link>
 
+      {/* Entry Form */}
       <form onSubmit={handleSubmit}>
-        <label>Date:</label><br />
-        <input type="date" value={date} onChange={(e) => setDate(e.target.value)} required /><br />
+        <label>Date:</label>
+        <input
+          type="date"
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+          required
+        />
 
-        <label>Category:</label><br />
+        <label>Category:</label>
         <select value={category} onChange={(e) => setCategory(e.target.value)}>
           <option value="">--Select--</option>
           <option value="Food">Food</option>
           <option value="Transport">Transport</option>
           <option value="Shopping">Shopping</option>
           <option value="Entertainment">Entertainment</option>
-        </select><br />
+        </select>
 
-        <label>Or Add Custom Category:</label><br />
-        <input type="text" value={customCategory} onChange={(e) => setCustomCategory(e.target.value)} /><br />
+        <label>Or Add Custom Category:</label>
+        <input
+          type="text"
+          value={customCategory}
+          onChange={(e) => setCustomCategory(e.target.value)}
+        />
 
-        <label>Amount:</label><br />
-        <input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} required /><br /><br />
+        <label>Amount:</label>
+        <input
+          type="number"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          required
+        />
 
         <button type="submit">Add Entry</button>
       </form>
 
-      <br />
-      <Link to="/">📊 Back to Analytics</Link>
+      {/* Entry List */}
+      <h2 style={{ marginTop: '2rem' }}>📋 Your Entries</h2>
+      {entries.length === 0 ? (
+        <p>No entries yet.</p>
+      ) : (
+        <ul className="journal-list">
+          {entries.map((entry, index) => (
+            <li key={index} className="journal-item">
+              <span>
+                <strong>{entry.date}</strong> – {entry.category} – ${entry.amount}
+              </span>
+              <button onClick={() => handleDelete(index)} className="delete-btn">
+                Delete
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
